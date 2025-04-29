@@ -155,6 +155,7 @@ def decode_video_frames_torchvision(
     )
 
     # get closest frames to the query timestamps
+    # TODO(rcadene): remove torch.stack
     closest_frames = torch.stack([loaded_frames[idx] for idx in argmin_])
     closest_ts = loaded_ts[argmin_]
 
@@ -252,7 +253,7 @@ def encode_video_frames(
     g: int | None = 2,
     crf: int | None = 30,
     fast_decode: int = 0,
-    log_level: str | None = "error",
+    log_level: str | None = "quiet",
     overwrite: bool = False,
 ) -> None:
     """More info on ffmpeg arguments tuning on `benchmark/video/README.md`"""
@@ -264,7 +265,7 @@ def encode_video_frames(
         [
             ("-f", "image2"),
             ("-r", str(fps)),
-            ("-i", str(imgs_dir / "frame_%06d.png")),
+            ("-i", str(imgs_dir / "frame-%06d.png")),
             ("-vcodec", vcodec),
             ("-pix_fmt", pix_fmt),
         ]
