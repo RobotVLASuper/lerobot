@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { postParentMessageWithParams } from "@/utils/postParentMessage";
 
 type ExploreGridProps = {
   datasets: Array<{ id: string; videoUrl: string | null }>;
@@ -16,6 +17,13 @@ export default function ExploreGrid({
   currentPage,
   totalPages,
 }: ExploreGridProps) {
+  // sync with parent window hf.co/spaces
+  useEffect(() => {
+    postParentMessageWithParams((params: URLSearchParams) => {
+      params.set("path", window.location.pathname + window.location.search);
+    });
+  }, []);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   // Create an array of refs for each video
