@@ -7,7 +7,11 @@ import {
 } from "@/utils/parquetUtils";
 
 // Server component for data fetching
-export default async function ExplorePage({ searchParams }: { searchParams: { p?: string } }) {
+export default async function ExplorePage({
+  searchParams,
+}: {
+  searchParams: { p?: string };
+}) {
   let datasets: any[] = [];
   let currentPage = 1;
   let totalPages = 1;
@@ -22,7 +26,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: { p?
     const data = await res.json();
     const allDatasets = data.datasets || data;
     // Use searchParams from props
-    const page = parseInt(searchParams?.p || '1', 10);
+    const page = parseInt(searchParams?.p || "1", 10);
     const perPage = 30;
 
     currentPage = page;
@@ -31,7 +35,6 @@ export default async function ExplorePage({ searchParams }: { searchParams: { p?
     const startIdx = (currentPage - 1) * perPage;
     const endIdx = startIdx + perPage;
     datasets = allDatasets.slice(startIdx, endIdx);
-
   } catch (e) {
     return <div className="p-8 text-red-600">Failed to load datasets.</div>;
   }
@@ -61,7 +64,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: { p?
               videoPath;
             // Check if videoUrl exists (status 200)
             try {
-              const headRes = await fetch(url, { method: 'HEAD' });
+              const headRes = await fetch(url, { method: "HEAD" });
               if (headRes.ok) {
                 videoUrl = url;
               }
@@ -81,5 +84,11 @@ export default async function ExplorePage({ searchParams }: { searchParams: { p?
     )
   ).filter(Boolean) as { id: string; videoUrl: string | null }[];
 
-  return <ExploreGrid datasets={datasetWithVideos} currentPage={currentPage} totalPages={totalPages} />;
+  return (
+    <ExploreGrid
+      datasets={datasetWithVideos}
+      currentPage={currentPage}
+      totalPages={totalPages}
+    />
+  );
 }

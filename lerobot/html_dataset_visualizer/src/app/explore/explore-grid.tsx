@@ -11,7 +11,11 @@ type ExploreGridProps = {
   totalPages: number;
 };
 
-export default function ExploreGrid({ datasets, currentPage, totalPages }: ExploreGridProps) {
+export default function ExploreGrid({
+  datasets,
+  currentPage,
+  totalPages,
+}: ExploreGridProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   // Create an array of refs for each video
