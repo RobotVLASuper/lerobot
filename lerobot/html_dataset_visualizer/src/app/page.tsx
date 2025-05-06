@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 
@@ -154,6 +155,13 @@ export default function Home({
             ))}
           </div>
         </div>
+
+        <Link
+          href="/explore"
+          className="inline-block px-6 py-3 mt-8 rounded-md bg-sky-500 text-white font-semibold text-lg shadow-lg hover:bg-sky-400 transition-colors"
+        >
+          Explore Open Datasets
+        </Link>
       </div>
     </div>
   );
