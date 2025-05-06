@@ -1,22 +1,39 @@
 "use client";
 
 import React, { useRef } from "react";
+import Link from "next/link";
+
+import { useRouter, useSearchParams } from "next/navigation";
 
 type ExploreGridProps = {
   datasets: Array<{ id: string; videoUrl: string | null }>;
+  currentPage: number;
+  totalPages: number;
 };
 
-export default function ExploreGrid({ datasets }: ExploreGridProps) {
+export default function ExploreGrid({ datasets, currentPage, totalPages }: ExploreGridProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   // Create an array of refs for each video
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  // Helper to get current page param and increment
+  const handleNext = () => {
+    const currentP = parseInt(searchParams.get("p") || "1", 10);
+    const nextP = currentP + 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("p", nextP.toString());
+    router.push(`?${params.toString()}`);
+  };
 
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-6">Explore LeRobot Datasets</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {datasets.map((ds, idx) => (
-          <div
+          <Link
             key={ds.id}
+            href={`/${ds.id}`}
             className="relative border rounded-lg p-4 bg-white shadow hover:shadow-lg transition overflow-hidden h-48 flex items-end group"
             onMouseEnter={() => {
               const vid = videoRefs.current[idx];
@@ -52,8 +69,34 @@ export default function ExploreGrid({ datasets }: ExploreGridProps) {
             <div className="relative z-20 font-mono text-blue-100 break-all text-sm bg-black/60 backdrop-blur px-2 py-1 rounded shadow">
               {ds.id}
             </div>
-          </div>
+          </Link>
         ))}
+      </div>
+      <div className="flex justify-center mt-8 gap-4">
+        {currentPage > 1 && (
+          <button
+            className="px-6 py-2 bg-gray-600 text-white rounded shadow hover:bg-gray-700 transition"
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search);
+              params.set("p", (currentPage - 1).toString());
+              window.location.search = params.toString();
+            }}
+          >
+            Previous
+          </button>
+        )}
+        {currentPage < totalPages && (
+          <button
+            className="px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition"
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search);
+              params.set("p", (currentPage + 1).toString());
+              window.location.search = params.toString();
+            }}
+          >
+            Next
+          </button>
+        )}
       </div>
     </main>
   );

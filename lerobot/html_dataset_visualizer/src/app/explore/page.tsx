@@ -7,17 +7,31 @@ import {
 } from "@/utils/parquetUtils";
 
 // Server component for data fetching
-export default async function ExplorePage() {
+export default async function ExplorePage({ searchParams }: { searchParams: { p?: string } }) {
   let datasets: any[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
   try {
     const res = await fetch(
-      "https://huggingface.co/api/datasets?filter=lerobot&sort=lastModified",
+      "https://huggingface.co/api/datasets?sort=lastModified&filter=LeRobot",
       {
         cache: "no-store",
       },
     );
     if (!res.ok) throw new Error("Failed to fetch datasets");
-    datasets = await res.json();
+    const data = await res.json();
+    const allDatasets = data.datasets || data;
+    // Use searchParams from props
+    const page = parseInt(searchParams?.p || '1', 10);
+    const perPage = 30;
+
+    currentPage = page;
+    totalPages = Math.ceil(allDatasets.length / perPage);
+
+    const startIdx = (currentPage - 1) * perPage;
+    const endIdx = startIdx + perPage;
+    datasets = allDatasets.slice(startIdx, endIdx);
+
   } catch (e) {
     return <div className="p-8 text-red-600">Failed to load datasets.</div>;
   }
@@ -32,7 +46,7 @@ export default async function ExplorePage() {
           const jsonUrl = `https://huggingface.co/datasets/${repoId}/resolve/main/meta/info.json`;
           const info = await fetchJson<DatasetMetadata>(jsonUrl);
           const videoEntry = Object.entries(info.features).find(
-            ([_key, value]) => value.dtype === "video",
+            ([key, value]) => value.dtype === "video",
           );
           let videoUrl: string | null = null;
           if (videoEntry) {
@@ -42,11 +56,20 @@ export default async function ExplorePage() {
               episode_chunk: "0".padStart(3, "0"),
               episode_index: "0".padStart(6, "0"),
             });
-            videoUrl =
+            const url =
               `https://huggingface.co/datasets/${repoId}/resolve/main/` +
               videoPath;
+            // Check if videoUrl exists (status 200)
+            try {
+              const headRes = await fetch(url, { method: 'HEAD' });
+              if (headRes.ok) {
+                videoUrl = url;
+              }
+            } catch (e) {
+              // If fetch fails, videoUrl remains null
+            }
           }
-          return { id: repoId, videoUrl };
+          return videoUrl ? { id: repoId, videoUrl } : null;
         } catch (err) {
           console.error(
             `Failed to fetch or parse dataset info for ${ds.id}:`,
@@ -56,7 +79,7 @@ export default async function ExplorePage() {
         }
       }),
     )
-  ).filter(Boolean);
+  ).filter(Boolean) as { id: string; videoUrl: string | null }[];
 
-  return <ExploreGrid datasets={datasetWithVideos} />;
+  return <ExploreGrid datasets={datasetWithVideos} currentPage={currentPage} totalPages={totalPages} />;
 }
