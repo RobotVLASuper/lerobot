@@ -24,19 +24,8 @@ export default function ExploreGrid({
     });
   }, []);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
   // Create an array of refs for each video
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  // Helper to get current page param and increment
-  const handleNext = () => {
-    const currentP = parseInt(searchParams.get("p") || "1", 10);
-    const nextP = currentP + 1;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("p", nextP.toString());
-    router.push(`?${params.toString()}`);
-  };
 
   return (
     <main className="p-8">
