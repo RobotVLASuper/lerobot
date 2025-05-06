@@ -78,8 +78,7 @@ function EpisodeViewerInner({ data }: { data: any }) {
   // sync with parent window hf.co/spaces
   useEffect(() => {
     postParentMessageWithParams((params: URLSearchParams) => {
-      params.set("dataset", datasetInfo.repoId);
-      params.set("episode", `${episodeId}`);
+      params.set("path", window.location.pathname+window.location.search);
     });
   }, []);
 
@@ -114,9 +113,7 @@ function EpisodeViewerInner({ data }: { data: any }) {
         `${window.location.pathname}?${newParams.toString()}`,
       );
       postParentMessageWithParams((params: URLSearchParams) => {
-        params.set("dataset", datasetInfo.repoId);
-        params.set("episode", `${episodeId}`);
-        params.set("t", currentSec.toString());
+        params.set("path", window.location.pathname+window.location.search);
       });
     }
   }, [isPlaying, currentTime, searchParams]);

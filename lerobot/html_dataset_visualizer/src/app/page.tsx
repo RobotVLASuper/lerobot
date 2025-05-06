@@ -9,6 +9,11 @@ export default function Home({
   searchParams: { [key: string]: string | undefined };
 }) {
   // sync with hf.co/spaces URL params
+  if(searchParams.path) {
+    redirect(searchParams.path);
+  }
+
+  // leagcy sync with hf.co/spaces URL params
   let redirectUrl: string | null = null;
   if (searchParams?.dataset && searchParams?.episode) {
     redirectUrl = `/${searchParams.dataset}/episode_${searchParams.episode}`;
