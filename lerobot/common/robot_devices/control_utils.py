@@ -23,10 +23,12 @@ import traceback
 from contextlib import nullcontext
 from copy import copy
 from functools import cache
+from uuid import uuid4
 
 import rerun as rr
 import torch
 from deepdiff import DeepDiff
+from numpy import arange
 from termcolor import colored
 
 from lerobot.common.datasets.image_writer import safe_stop_image_writer
@@ -274,6 +276,13 @@ def control_loop(
         for microphone_name, microphone in robot.microphones.items()
     }
 
+    if (display_data and not is_headless()) or (display_data and robot.robot_type.startswith("lekiwi")):
+        rr.init(
+            application_id="lerobot_control_loop", recording_id=uuid4()
+        )  # Flush rerun plots by calling init()
+        rr.set_time_seconds("episode_time", seconds=0.0)
+        rerun_start_time = time.perf_counter()
+
     while timestamp < control_time_s:
         start_loop_t = time.perf_counter()
 
@@ -305,8 +314,20 @@ def control_loop(
             frame = {**observation, **action, "task": single_task}
             dataset.add_frame(frame)
 
+        if fps is not None:
+            dt_s = time.perf_counter() - start_loop_t
+            busy_wait(1 / fps - dt_s)
+
+        dt_s = time.perf_counter() - start_loop_t
+        log_control_info(robot, dt_s, fps=fps)
+
+        timestamp = time.perf_counter() - start_episode_t
+
         # TODO(Steven): This should be more general (for RemoteRobot instead of checking the name, but anyways it will change soon)
         if (display_data and not is_headless()) or (display_data and robot.robot_type.startswith("lekiwi")):
+            rerun_current_time = time.perf_counter() - rerun_start_time
+            rr.set_time_seconds("time", seconds=rerun_current_time)
+
             if action is not None:
                 for k, v in action.items():
                     for i, vv in enumerate(v):
@@ -316,14 +337,24 @@ def control_loop(
             for key in image_keys:
                 rr.log(key, rr.Image(observation[key].numpy()), static=True)
 
-        if fps is not None:
-            dt_s = time.perf_counter() - start_loop_t
-            busy_wait(1 / fps - dt_s)
+            for microphone_key, microphone in robot.microphones.items():
+                observation_key = f"observation.audio.{microphone_key}"
+                rr.send_columns(
+                    observation_key,
+                    indexes=[
+                        rr.TimeSecondsColumn(
+                            "time",
+                            times=rerun_current_time
+                            + arange(
+                                -len(observation[observation_key]) / microphone.sample_rate,
+                                0,
+                                1 / microphone.sample_rate,
+                            ),
+                        )
+                    ],
+                    columns=rr.Scalar.columns(scalar=observation[observation_key].numpy()),
+                )
 
-        dt_s = time.perf_counter() - start_loop_t
-        log_control_info(robot, dt_s, fps=fps)
-
-        timestamp = time.perf_counter() - start_episode_t
         if events["exit_early"]:
             events["exit_early"] = False
             break
