@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import platform
+import sys
 import time
 
 
 def busy_wait(seconds):
-    if platform.system() == "Darwin":
+    if platform.system() == "Darwin" and sys.version_info < (3, 11):
         # On Mac, `time.sleep` is not accurate and we need to use this while loop trick,
         # but it consumes CPU cycles.
         # TODO(rcadene): find an alternative: from python 11, time.sleep is precise
@@ -60,6 +61,28 @@ class RobotDeviceAlreadyConnectedError(Exception):
     def __init__(
         self,
         message="This robot device is already connected. Try not calling `robot_device.connect()` twice.",
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+
+class RobotDeviceNotRecordingError(Exception):
+    """Exception raised when the robot device is not recording."""
+
+    def __init__(
+        self,
+        message="This robot device is not recording. Try calling `robot_device.start_recording()` first.",
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+
+class RobotDeviceAlreadyRecordingError(Exception):
+    """Exception raised when the robot device is already recording."""
+
+    def __init__(
+        self,
+        message="This robot device is already recording. Try not calling `robot_device.start_recording()` twice.",
     ):
         self.message = message
         super().__init__(self.message)
