@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from lerobot.utils.rje import rjhaha
 
 # Copyright 2024 The HuggingFace Inc. team. All rights reserved.
 #

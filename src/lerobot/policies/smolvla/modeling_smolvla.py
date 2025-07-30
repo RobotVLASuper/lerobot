@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from lerobot.utils.rje import rjhaha
 # Copyright 2025 HuggingFace Inc. team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

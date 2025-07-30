@@ -14,7 +14,6 @@
 ## custom
 hq_test/
 hq_unit_test/
-setup_rj.py
 
 ### Environments & Dependencies ###
 .env

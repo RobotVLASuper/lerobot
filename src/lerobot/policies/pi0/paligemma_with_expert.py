@@ -1,3 +1,4 @@
+from lerobot.utils.rje import rjhaha
 # Copyright 2024 The HuggingFace Inc. team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +32,7 @@ from transformers.models.auto import CONFIG_MAPPING
 from collections import deque
 
 from lerobot.policies.pi0.flex_attention import flex_attention_forward
+
 
 MIN_TRANSFORMERS = "4.52.0"
 OLD_GEMMA = version.parse(transformers.__version__) < version.parse(MIN_TRANSFORMERS)

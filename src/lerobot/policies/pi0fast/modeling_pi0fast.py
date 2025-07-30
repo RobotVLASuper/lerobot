@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from lerobot.utils.rje import rjhaha
 
 # Copyright 2025 Physical Intelligence and The HuggingFace Inc. team. All rights reserved.
 #
@@ -68,6 +69,7 @@ import transformers
 
 # DEBUG:
 import lerobot.debug_tools as D
+
 
 MIN_TRANSFORMERS = "4.52.0"
 OLD_GEMMA = version.parse(transformers.__version__) < version.parse(MIN_TRANSFORMERS)
