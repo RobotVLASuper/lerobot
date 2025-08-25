@@ -114,14 +114,27 @@ class UR5Follower(Robot):
         # TODO: show move to rest position
         if not self.is_calibrated and calibrate:
             self.calibrate()
-
+        print('self.cameras is ',self.cameras)
         for cam_key, cam in self.cameras.items():
-            if 'RealSenseCamera' in str(type(cam)):
+
+            if '1_right'==cam_key:
+                print('1_right is ',cam)
                 from lerobot.cameras.configs import ColorMode
                 from lerobot.cameras.realsense.camera_realsense import RealSenseCamera
                 from lerobot.cameras.realsense.configuration_realsense import RealSenseCameraConfig
                 rs_config = RealSenseCameraConfig(
                 serial_number_or_name='f1480368',
+                color_mode=ColorMode.RGB,
+            )
+                cam = RealSenseCamera(rs_config)
+            
+            elif '2_bottom'==cam_key:
+                print('2_bottom is ',cam)
+                from lerobot.cameras.configs import ColorMode
+                from lerobot.cameras.realsense.camera_realsense import RealSenseCamera
+                from lerobot.cameras.realsense.configuration_realsense import RealSenseCameraConfig
+                rs_config = RealSenseCameraConfig(
+                serial_number_or_name='f1420223',
                 color_mode=ColorMode.RGB,
             )
                 cam = RealSenseCamera(rs_config)
@@ -150,8 +163,8 @@ class UR5Follower(Robot):
         self.robot.endFreedriveMode()
         self.move_params = {
             "move_mode": self.config.move_mode,  # Options: "servo", "moveit"
-            "velocity": 0.5,  # default velocity 1.05 in moveJ
-            "acceleration": 0.5,  # default acceleration 1.4 in moveJ
+            "velocity": 0.2,  # default velocity 1.05 in moveJ
+            "acceleration": 0.2,  # default acceleration 1.4 in moveJ
             "dt": 1.0 / 500,  # 2ms
             "lookahead_time": 0.1,
             "gain": 100,

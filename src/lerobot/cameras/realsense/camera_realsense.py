@@ -116,7 +116,7 @@ class RealSenseCamera(Camera):
 
         self.config = config
 
-        if config.serial_number_or_name.isdigit():
+        if config.serial_number_or_name.isdigit() or ('f14' in config.serial_number_or_name):
             self.serial_number = config.serial_number_or_name
         else:
             if config.serial_number_or_name=='f1480368':

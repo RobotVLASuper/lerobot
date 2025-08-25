@@ -13,8 +13,7 @@ rm -rf /home/svt/workspace/code/tmp
 
 python -m lerobot.record \
     --display_data=True \
-    --robot.type=ur5_follower_end_effector\
-    --robot.robot_ip="192.168.1.20" \
+    --robot.type=ur5_follower\
     --robot.with_gripper=True \
     --robot.cameras='{"0_top": {"type": "basler", "camera_idx": 0,}, "1_right": {"type": "intelrealsense", "serial_number_or_name": "f1480368", "width": 1280, "height": 720, "fps": 20,}, "2_bottom": {"type": "intelrealsense", "serial_number_or_name": "f1420223", "width": 1280, "height": 720, "fps": 20,}}' \
     --robot.move_mode=servo \
@@ -25,7 +24,7 @@ python -m lerobot.record \
     --dataset.num_episodes=2 \
     --dataset.root=/home/svt/workspace/code/tmp \
     --dataset.single_task="Grab the cube" \
-    --teleop.type=gamepadoptim \
+    --teleop.type=ur_leader \
     --teleop.id=rjnj
 
     # <- Teleop optional if you want to teleoperate to record or in between episodes with a policy \
@@ -33,3 +32,5 @@ python -m lerobot.record \
 
     # <- Policy optional if you want to record with a policy \
     # --policy.path=${HF_USER}/my_policy \
+
+    # --robot.robot_ip="192.168.1.20" \
