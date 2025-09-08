@@ -16,6 +16,7 @@ hq_test/
 hq_unit_test/
 setup_rj.py
 outputs/
+third_party/
 
 ### Environments & Dependencies ###
 .env
